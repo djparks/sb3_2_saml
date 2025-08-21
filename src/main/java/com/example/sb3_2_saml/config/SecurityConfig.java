@@ -36,6 +36,20 @@ public class SecurityConfig {
     }
 
     @Bean
+    public SecurityFilterChain securityFilterChainSimple(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/samlsimple/**")
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/health", "/api/public/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
+
+        return http.build();
+    }
+
+    @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
         handler.setDefaultTargetUrl("/");
